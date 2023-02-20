@@ -10,4 +10,5 @@ urlpatterns = [
     path('activate/<uidb64>/<token>', a.VerificationView, name='activate'),
     path('request-reset-link', a.RequestPasswordResetEmail, name='reset'),
     path('set-new-password/<uidb64>/<token>', a.CompletePasswordReset, name='reset-user-password'),
+    path('getdata', a.getdata, name='reset'),
 ]

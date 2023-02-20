@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-ebez=_dbvr(-+1gi7d%^_)hvxuqt_7g1)c^3sbfqvp%ryz(&_f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

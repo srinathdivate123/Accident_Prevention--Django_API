@@ -1,12 +1,9 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-
 from django.shortcuts import render, redirect
 from django.contrib import auth
 from django.contrib.auth.models import User
 from django.contrib import messages
-from django.http import JsonResponse
 from validate_email import validate_email
 import json
 import pdb
@@ -16,12 +13,34 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.utils.encoding import force_bytes, force_str
 from django.core.mail import send_mail
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.template.loader import render_to_string
 from .utils import token_generator
 from django.urls import reverse
 from django.contrib import auth
 import threading
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
+@api_view(['GET'])
+def getdata(request):
+    ans = [
+        {
+            'firstKey': 'val1',
+            'secondKey': 'val2',
+            'thirdKey': None,
+            'fourthKey': True,
+        },
+        {
+            '2firstKey': 'val1',
+            '2secondKey': 'val2',
+            '2thirdKey': None,
+            '2fourthKey': True,
+        },
+        {
+            '3firstKey': 'val1',
+            '3secondKey': 'val2',
+            '3thirdKey': None,
+            '3fourthKey': True,
+        },
+    ]
+    return Response(ans)
 
 
 class EmailThread(threading.Thread):
@@ -56,19 +75,19 @@ def RegistrationView(request):
     try:
         username = request.data['username']
     except Exception as e:
-        return Response({'login_response':'Enter username'})
+        return Response({'reg_response':'Please enter username!'})
     try:
         email = request.data['email']
     except Exception as a:
-        return Response({'login_response':'Enter email'})
+        return Response({'reg_response':'Please enter email!'})
     try:
         password = request.data['password']
     except Exception as a:
-        return Response({'login_response':'Enter password'})
+        return Response({'reg_response':'Please enter password!'})
     if not User.objects.filter(username=username).exists():
         if not User.objects.filter(email=email).exists():
             if len(password) < 6:
-                return Response({'registration_response':'Password less than 6 characters'})
+                return Response({'reg_response':'Enter a password greater than 6 characters!'})
             user = User.objects.create_user(username=username, email=email)
             user.set_password(password)
             user.is_active = False
@@ -91,9 +110,9 @@ def RegistrationView(request):
                 [email],
             )
             EmailThread(email).start()
-            return Response({'registration_response':'Account Successfully Created'})
-        return Response({'registration_response':'Email in use'})
-    return Response({'registration_response':'Username in use'})
+            return Response({'reg_response':'Account Successfully Created'})
+        return Response({'reg_response':'This email is in use. Choose another one!'})
+    return Response({'reg_response':'This username is in use. Choose another one!'})
 
 
 def VerificationView(request,uidb64, token):
@@ -119,15 +138,15 @@ def LoginView(request):
     try:
         email = request.data['email']
     except Exception as e:
-        return Response({'login_response':'Enter email'})
+        return Response({'login_response':'Please enter email!'})
     try:
         password = request.data['password']
     except Exception as a:
-        return Response({'login_response':'Enter password'})
+        return Response({'login_response':'Please enter password!'})
     try:
         user_name = User.objects.get(email=email).username
     except Exception as a:
-        return Response({'login_response':'Enter correct credentials'})
+        return Response({'login_response':'Wrong credentials!'})
     user = auth.authenticate(username = user_name,password=password)
     if user:
         if user.is_active:
@@ -149,9 +168,12 @@ def RequestPasswordResetEmail(request):
     try:
         email = request.data['email']
     except Exception as e:
-        return Response({'reset_response':'Enter email'})
-    if not User.objects.filter(email=email).exists() or not validate_email(email): 
-        return Response({'reset_response': 'This email is not registered with us. Please register yourself first.'})
+        return Response({'reset_response':'Please enter email!'})
+    if not validate_email(email):
+        return Response({'reset_response': 'Please enter a valid email.'})
+    else:
+        if not User.objects.filter(email=email).exists(): 
+            return Response({'reset_response': 'This email is not registered with us. Please register yourself first.'})
 
     current_site = get_current_site(request)
     user = User.objects.filter(email=email)
