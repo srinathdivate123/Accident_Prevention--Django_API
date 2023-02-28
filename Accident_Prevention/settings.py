@@ -7,7 +7,8 @@ SECRET_KEY = 'django-insecure-ebez=_dbvr(-+1gi7d%^_)hvxuqt_7g1)c^3sbfqvp%ryz(&_f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['accidentwarn.pythonanywhere.com', '127.0.0.1']
+CSRF_TRUSTED_ORIGINS=['https://accidentwarn.pythonanywhere.com', 'http://accidentwarn.pythonanywhere.com', 'http://127.0.0.1' 'https://127.0.0.1']
 
 
 # Application definition

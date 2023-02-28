@@ -18,30 +18,19 @@ from django.urls import reverse
 from django.contrib import auth
 import threading
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-@api_view(['GET'])
-def getdata(request):
-    ans = [
-        {
-            'firstKey': 'val1',
-            'secondKey': 'val2',
-            'thirdKey': None,
-            'fourthKey': True,
-        },
-        {
-            '2firstKey': 'val1',
-            '2secondKey': 'val2',
-            '2thirdKey': None,
-            '2fourthKey': True,
-        },
-        {
-            '3firstKey': 'val1',
-            '3secondKey': 'val2',
-            '3thirdKey': None,
-            '3fourthKey': True,
-        },
-    ]
-    return Response(ans)
 
+@api_view(['PUT'])
+def getUserDataView(request):
+    content = request.data['_content']
+    content.replace('\r\n', '')
+    content = json.loads(content)
+    name = content['name']
+    email = content['email']
+    password = content['password']
+    print(name)
+    print(email)
+    print(password)
+    return Response({"success":True})
 
 class EmailThread(threading.Thread):
     def __init__(self, email):
@@ -49,6 +38,8 @@ class EmailThread(threading.Thread):
         threading.Thread.__init__(self)
     def run(self):
         self.email.send(fail_silently=False)
+
+
 
 @api_view(['PUT'])
 def EmailValidationView(request):
@@ -89,7 +80,7 @@ def RegistrationView(request):
             if len(password) < 6:
                 return Response({'reg_response':'Enter a password greater than 6 characters!'})
             user = User.objects.create_user(username=username, email=email)
-            user.set_password(password)
+            user.set_password(password) 
             user.is_active = False
             user.save()
             current_site = get_current_site(request)

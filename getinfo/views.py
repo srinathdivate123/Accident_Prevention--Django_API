@@ -1,17 +1,22 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-@api_view(['PUT'])
+import json
+@api_view(['GET', 'POST'])
 def RepeatGetInfoView(request):
-    latitude = request.data['latitude']
-    longitude = request.data['longitude']
-    speed = request.data['speed']
-    print(latitude)
-    print(longitude)
-    print(speed)
-    return Response({"success":True})
-
-
+    if request.method == 'GET':
+        return Response({"Status": "This is test data sent by GET request"})
+    if request.method == 'POST':
+        content = request.data['_content']
+        content.replace('\r\n', '')
+        content = json.loads(content)
+        latitude = content['latitude']
+        longitude = content['longitude']
+        speed = content['speed']
+        date = content['date']
+        time = content['time']
+        gender = content['gender']
+        age = content['age']
+        return Response({"success":True})
 
 @api_view(['GET'])
 def testGetView(request):
