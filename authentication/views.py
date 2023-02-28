@@ -19,18 +19,21 @@ from django.contrib import auth
 import threading
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 
-@api_view(['PUT'])
+@api_view(['GET', 'POST'])
 def getUserDataView(request):
-    content = request.data['_content']
-    content.replace('\r\n', '')
-    content = json.loads(content)
-    name = content['name']
-    email = content['email']
-    password = content['password']
-    print(name)
-    print(email)
-    print(password)
-    return Response({"success":True})
+    if request.method == 'GET':
+        return Response({"Status": "This is test data sent by GET request"})
+    if request.method == 'POST':
+        content = request.data['_content']
+        content.replace('\r\n', '')
+        content = json.loads(content)
+        name = content['name']
+        email = content['email']
+        password = content['password']
+        print(name)
+        print(email)
+        print(password)
+        return Response({"success":True})
 
 class EmailThread(threading.Thread):
     def __init__(self, email):
